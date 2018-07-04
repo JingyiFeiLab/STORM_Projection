@@ -1,0 +1,18 @@
+cell_id = 2;
+
+cell_center_x = [];
+cell_center_y = [];
+percent_off_center = .1;
+
+for si = 1:length(cell_struct(cell_id).Spots(:,1))
+    off_center = abs(cell_struct(cell_id).Spots(si,2));
+    if off_center/cell_struct(cell_id).Cell_X_Axis < percent_off_center*cell_struct(cell_id).Cell_X_Axis
+        cell_center_x = [cell_center_x cell_struct(cell_id).Spots(si,2)];
+        cell_center_y = [cell_center_y cell_struct(cell_id).Spots(si,3)];
+    end
+end
+
+figure(2);scatter(cell_center_x,cell_center_y,100,'filled')
+ylabel('Long Axis','FontSize',24)
+xlabel('Short
+        
