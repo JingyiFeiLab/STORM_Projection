@@ -14,11 +14,11 @@ close all
 
 pixelscaling = 130; % Sometimes Seongjin's data is in nm, sometimes in um. If nm, set to 130. If um, set to .130
 % set "dataset" to STORM output .txt file
-dataset='/Users/reyer/Documents/MATLAB/SOURCE_CODES/sample_images_matt/Matt_Microscope/ericDapi/output_fr.txt';                                          % Name of the datafile that you input....Lot of output files will have this "dataset" in their names
+dataset='/Users/reyer/Documents/MATLAB/SOURCE_CODES/sample_images_matt/Matt_Microscope/ericDapi2/output.txt';                                          % Name of the datafile that you input....Lot of output files will have this "dataset" in their names
 %set "dic_file" to image containg the dic image
 
-dic_file = '/Users/reyer/Documents/MATLAB/SOURCE_CODES/sample_images_matt/Matt_Microscope/ericDapi/dic4.tif';
-dapi_file = '/Users/reyer/Documents/MATLAB/SOURCE_CODES/sample_images_matt/Matt_Microscope/ericDapi/sample4';
+dic_file = '/Users/reyer/Documents/MATLAB/SOURCE_CODES/sample_images_matt/Matt_Microscope/ericDapi2/DIC_2.tif';
+dapi_file = '/Users/reyer/Documents/MATLAB/SOURCE_CODES/sample_images_matt/Matt_Microscope/ericDapi2/sample';
 stack_dapi = imFormat_wholeImage(dapi_file,1);
 dapi_objects = dapiMask(stack_dapi);
 
@@ -104,6 +104,10 @@ for j = 1:num_dapi
     dapi_ids = [];
     dapi_ids = unique(temp_dapi_mask.*mask);
     dapi_ids(dapi_ids==0) = [];
+    if isempty(dapi_ids)
+        continue
+    end
+    
     if length(dapi_ids) > 1
         mask_temp_split = zeros(size(mask));
         for split_i = 1:length(dapi_ids)
@@ -131,6 +135,10 @@ for j = 1:num_dapi
     dapi_ids = [];
     dapi_ids = unique(temp_dapi_mask.*new_mask);
     dapi_ids(dapi_ids==0) = [];
+    if isempty(dapi_ids)
+        continue
+    end
+    
     d4(d3 == j) = dapi_ids;
     
 end
