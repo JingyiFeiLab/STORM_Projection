@@ -123,7 +123,8 @@ end
 d3 = bwlabel(d3);
 d4 = d3;
 num_dapi = max(d3(:));
-[new_mask,area,ellipticity,center] = post_track_mask(mask,d3);
+clear centers area ellipticity
+[new_mask,area,ellipticity,centers] = post_track_mask(mask,d3);
 
 for j = 1:num_dapi
     temp_dapi_mask = d3==j;
@@ -177,6 +178,7 @@ for i = 1:max(new_mask(:))
     cell_struct(i).Center = [centers(i,2),centers(i,1)];
     cell_struct(i).Boundaries = bwboundaries(imdilate(new_mask==i,se));
     cell_struct(i).Dapi_Boundaries = bwboundaries(d4==i);
+    cell_struct(i).Transformed_Dapi_Boundaries = cell_struct(i).Dapi_Boundaries;
     cell_struct(i).Cell_Angle = -ellipticity(i,2)*(pi/180);
     cell_struct(i).Cell_Y_Axis = ellipticity(i,3);
     cell_struct(i).Cell_X_Axis = ellipticity(i,4);
@@ -193,7 +195,7 @@ for i = 1:max(new_mask(:))
     if ~isempty(cell_struct(i).Dapi_Boundaries) 
         
         for di = 1:length(cell_struct(i).Dapi_Boundaries)
-            cell_struct(i).Transformed_Dapi_Boundaries = cell_struct(i).Dapi_Boundaries;
+            
             cell_struct(i).Transformed_Dapi_Boundaries{di,1}(:,1) = cell_struct(i).Transformed_Dapi_Boundaries{di,1}(:,1) - cell_struct(i).Center(2);
             cell_struct(i).Transformed_Dapi_Boundaries{di,1}(:,2) = cell_struct(i).Transformed_Dapi_Boundaries{di,1}(:,2) - cell_struct(i).Center(1);
             dapi_row_border = cell_struct(i).Transformed_Dapi_Boundaries{di,1}(:,1);

@@ -38,6 +38,10 @@ for ri = 1:length(cell_struct)
     middle = 0;
     cytoplasm = 0;
     
+    cell_region_struct(rid).Whole_Volume = 0;
+    for sk = 2:length(cell_struct(ri).Transformed_Boundaries{1,1})
+        cell_region_struct(rid).Whole_Volume = cell_region_struct(rid).Whole_Volume + abs(cell_struct(ri).Transformed_Boundaries{1,1}(sk,1)-cell_struct(ri).Transformed_Boundaries{1,1}(sk-1,1))*(.5*(pi*cell_struct(ri).Transformed_Boundaries{1,1}(sk,2)^2));
+    end
     cell_region_struct(rid).Whole_Volume = pi*(.5*cell_struct(ri).Cell_X_Axis)^2*(cell_struct(ri).Cell_Y_Axis-cell_struct(ri).Cell_X_Axis)+(4/3)*pi*(.5*cell_struct(ri).Cell_X_Axis)^3;
     d_pole = .5*cell_struct(ri).Cell_Y_Axis - (1-pole_definition)*.5*cell_struct(ri).Cell_Y_Axis;
     %pole_angle = acos((cell_struct(ri).Cell_X_Axis-d_pole)/cell_struct(ri).Cell_X_Axis);

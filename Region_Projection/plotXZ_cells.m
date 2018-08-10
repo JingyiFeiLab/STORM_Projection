@@ -1,11 +1,14 @@
-one_cell_id = 2; % If you want to create a scatter plot for just one cell, put it's ID here
-plot_all_cells = 1; % If you want to create a heatmap for all spots in all cells, set to 1
+one_cell_id = 45; % If you want to create a scatter plot for just one cell, put it's ID here
+plot_all_cells = 0; % If you want to create a heatmap for all spots in all cells, set to 1
 percent_from_pole = .1; % Cutoff spots within this percentage of cell axis of cell pole
 
 cell_center_x = [];
 cell_center_z = [];
 
 from_pole_temp = [];
+
+levels = 10; %How many heights for cell spot density map? More takes longer
+             % 10 takes a little bit of time, 100 a lot
 
 if plot_all_cells == 0
     for si = 1:length(cell_struct(one_cell_id).Spots(:,1))
@@ -45,9 +48,19 @@ if plot_all_cells == 1
     end
     
     figure(3);
-    hist3([cell_center_x', cell_center_z'],'CDataMode','auto');
+    map = dataDensity(cell_center_x, cell_center_z, 256, 256);
+    map = map - min(min(map));
+    map = floor(map ./ max(max(map)) * (levels-1));
+    
+    image(map);
+    colormap(jet(levels));
+    set(gca, 'XTick', [1 256]);
+    set(gca, 'XTickLabel', [min(cell_center_x) max(cell_center_x)]);
+    set(gca, 'YTick', [1 256]);
+    set(gca, 'YTickLabel', [min(cell_center_z) max(cell_center_z)]);
+    
     colorbar
-    view(2)
+    grid on
     title(strcat(['All Cells XZ Spot Projection']),'FontSize',24)
     ylabel('Vertical Axis (Z)','FontSize',24)
     xlabel('Short Axis (X)','FontSize',24)
