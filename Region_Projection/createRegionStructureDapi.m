@@ -43,21 +43,28 @@ for ri = 1:length(cell_struct)
     %pole_angle = acos((cell_struct(ri).Cell_X_Axis-d_pole)/cell_struct(ri).Cell_X_Axis);
     cell_region_struct(rid).Pole_Volume = (1/3)*(pi*d_pole*(3*((cell_struct(ri).Cell_X_Axis)^2-(cell_struct(ri).Cell_X_Axis-d_pole)^2)+(d_pole)^2));
     cell_region_struct(rid).Membrane_Volume = 2*((1-pole_definition)*cell_struct(ri).Cell_Y_Axis*(cell_struct(ri).Cell_X_Axis*membrane_pixels-membrane_pixels^2));
-    cell_region_struct(rid).Middle_Volume = middle_definition*cell_struct(ri).Cell_Y_Axis*pi*(.5*percent_off_center*cell_struct(ri).Cell_X_Axis)^2;
+    %cell_region_struct(rid).Middle_Volume = middle_definition*cell_struct(ri).Cell_Y_Axis*pi*(.5*percent_off_center*cell_struct(ri).Cell_X_Axis)^2;
+    cell_region_struct(rid).Middle_Volume = 0;
+    for ji = 1:length(cell_struct(ri).Transformed_Dapi_Boundaries)
+        for jid = 2:length(cell_struct(ri).Transformed_Dapi_Boundaries{ji,1})
+            cell_region_struct(rid).Middle_Volume = cell_region_struct(rid).Middle_Volume + abs(cell_struct(ri).Transformed_Dapi_Boundaries{ji,1}(jid,1)-cell_struct(ri).Transformed_Dapi_Boundaries{ji,1}(jid-1,1))*(.5*(pi*cell_struct(ri).Transformed_Dapi_Boundaries{ji,1}(jid,2)^2));
+        end
+    end
     
     cell_region_struct(rid).Cytoplasm_Volume = max([0,cell_region_struct(rid).Whole_Volume - cell_region_struct(rid).Pole_Volume - cell_region_struct(rid).Membrane_Volume - cell_region_struct(rid).Middle_Volume]);
     
     for sri = 1:length(cell_struct(ri).Spots(:,1))
         from_pole = abs(cell_struct(ri).Spots(sri,3));
-        if from_pole > (1-pole_definition)*.5*cell_struct(ri).Cell_Y_Axis 
+        if spot_struct(cell_struct(ri).Spots(sri,1)).Region == 4
+            middle = middle + 1;
+            continue
+        elseif from_pole > (1-pole_definition)*.5*cell_struct(ri).Cell_Y_Axis 
             pole = pole+1;
             continue
         elseif spot_struct(cell_struct(ri).Spots(sri,1)).Distance2Membrane <= membrane_pixels
             membrane = membrane + 1;
             continue
-        elseif abs(spot_struct(cell_struct(ri).Spots(sri,1)).Collapsed_2D_Coordinate(1)) < percent_off_center*.5*cell_struct(ri).Cell_X_Axis && abs(spot_struct(cell_struct(ri).Spots(sri,1)).Collapsed_2D_Coordinate(2)) < middle_definition*.5*cell_struct(ri).Cell_Y_Axis
-            middle = middle + 1;
-            continue
+        
         else
             cytoplasm = cytoplasm + 1;
             continue
